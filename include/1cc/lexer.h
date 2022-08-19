@@ -18,19 +18,6 @@
 #include "1cc/token.h"
 
 typedef struct lexer Lexer;
-struct lexer {
-  // TODO: implement the vector and use as a stack. much more efficient and
-  // we dont have to worry about implementing any more complex containers
-  // as long as we have a vector.
-  // stack to contain each of the sources
-  // contain as stack as we have to account for include directive
-  Vector* source;
-  Allocator* token_allocator;
-  Arena* token_arena;
-  Hashmap* token_map;
-  Token* peek_token_cache;
-  Token* prev_token_cache;
-};
 
 Lexer* make_lexer(Allocator* allocator);
 void lexer_destroy(Lexer* lexer);

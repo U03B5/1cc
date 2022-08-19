@@ -20,6 +20,20 @@
   ((33 <= c && c <= 47) || (58 <= c && c <= 64) || (91 <= c && c <= 94) || \
    (123 <= c && c <= 126))
 
+struct lexer {
+  // TODO: implement the vector and use as a stack. much more efficient and
+  // we dont have to worry about implementing any more complex containers
+  // as long as we have a vector.
+  // stack to contain each of the sources
+  // contain as stack as we have to account for include directive
+  Vector* source;
+  Allocator* token_allocator;
+  Arena* token_arena;
+  Hashmap* token_map;
+  Token* peek_token_cache;
+  Token* prev_token_cache;
+};
+
 // constant token table used internally within the lexer
 const Token* g_token_table[] = {
 #define token(id, key, len) \
