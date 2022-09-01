@@ -8,11 +8,10 @@
 #ifndef VECTOR_H_
 #define VECTOR_H_
 
-#include <stdlib.h>
-
 typedef struct vector Vector;
-struct vector {};
 
-Vector* make_vector(void);
+Vector* vector_create(void);
+
+
 
 #endif  // VECTOR_H_

@@ -5,8 +5,12 @@
  *
  */
 
+#include <stdib.h>
 #include "1cc/vector.h"
 
+struct vector {
 
+
+};
 
 
