@@ -18,8 +18,8 @@
 
 typedef struct lexer Lexer;
 
-Lexer* make_lexer(Allocator* allocator);
-void lexer_destroy(Lexer* lexer);
-Token* lexer_get(Lexer* lexer, Source* src);
-Token* lexer_peek(Lexer* lexer, Source* src);
-#endif  // LEXER_H_
+Lexer *make_lexer(Allocator *allocator);
+void lexer_destroy(Lexer *lexer);
+Token *lexer_get(Lexer *lexer, Source *src);
+Token *lexer_peek(Lexer *lexer, Source *src);
+#endif // LEXER_H_

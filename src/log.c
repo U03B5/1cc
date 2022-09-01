@@ -9,13 +9,13 @@
 
 static Log g_log_handler;
 
-const char* g_log_levels[] = {
+const char *g_log_levels[] = {
     [LEVEL_SILENT] = BGRN "[SILENT]",   [LEVEL_INFO] = BCYN "[INFO]",
     [LEVEL_WARNING] = BYEL "[WARNING]", [LEVEL_ERROR] = BRED "[ERROR]",
     [LEVEL_FATAL] = BMAG "[FATAL]",     0};
 
-Lhandle* make_lhandle(FILE* handle, int level, Lhandle* prev) {
-  Lhandle* tmp = malloc(sizeof(Lhandle));
+Lhandle *make_lhandle(FILE *handle, int level, Lhandle *prev) {
+  Lhandle *tmp = malloc(sizeof(Lhandle));
   tmp->handle = handle;
   tmp->level = level;
   tmp->next = 0;
@@ -23,7 +23,7 @@ Lhandle* make_lhandle(FILE* handle, int level, Lhandle* prev) {
   return tmp;
 }
 
-int log_register(const char* key, FILE* file, int level) {
+int log_register(const char *key, FILE *file, int level) {
   Lhandle *tmp, *handle = 0;
   if (g_log_handler.head) {
     for (tmp = g_log_handler.head; tmp->next; tmp = tmp->next)
@@ -36,8 +36,8 @@ int log_register(const char* key, FILE* file, int level) {
   return 0;
 }
 
-void log_deregister(const char* key) {
-  Lhandle* tmp = hashmap_remove(&g_log_handler.handles, key);
+void log_deregister(const char *key) {
+  Lhandle *tmp = hashmap_remove(&g_log_handler.handles, key);
   if (tmp) {
     tmp->prev = tmp->next;
     fclose(tmp->handle);
@@ -46,25 +46,24 @@ void log_deregister(const char* key) {
   return;
 }
 
-void log_set_level(const char* key, int level) {
-  Lhandle* handle = hashmap_retrieve(&g_log_handler.handles, key);
+void log_set_level(const char *key, int level) {
+  Lhandle *handle = hashmap_retrieve(&g_log_handler.handles, key);
   if (handle)
     handle->level = level;
   return;
 }
 
-void log_internal(int level, const char* fmt, ...) {
+void log_internal(int level, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
   // TODO: remove newline
-  Lhandle* tmp;
+  Lhandle *tmp;
   for (tmp = g_log_handler.head; tmp; tmp = tmp->next) {
     if (LEVEL_SILENT <= tmp->level && tmp->level <= LEVEL_FATAL) {
       if (tmp->level >= level) {
-        fprintf(
-            tmp->handle, "%s%s ",
-            g_log_levels[level],  // potentially vulnerable, but i dont care.
-            COLOR_RESET);
+        fprintf(tmp->handle, "%s%s ",
+                g_log_levels[level], // potentially vulnerable, but i dont care.
+                COLOR_RESET);
         vfprintf(tmp->handle, fmt, args);
       }
     }
@@ -74,7 +73,7 @@ void log_internal(int level, const char* fmt, ...) {
 }
 
 void log_shutdown(void) {
-  Lhandle* tmp = g_log_handler.head;
+  Lhandle *tmp = g_log_handler.head;
   while (tmp) {
     g_log_handler.head = tmp->next;
     free(tmp);

@@ -7,8 +7,8 @@
 
 #include "1cc/source.h"
 
-Source* make_source(const char* path) {
-  Source* source = calloc(1, sizeof(Source));
+Source *make_source(const char *path) {
+  Source *source = calloc(1, sizeof(Source));
   if (source) {
     source->path = path;
     source->line = 0;
@@ -17,7 +17,7 @@ Source* make_source(const char* path) {
   return source;
 }
 
-Source* source_read(Source* source) {
+Source *source_read(Source *source) {
   struct stat fattr;
   int fd;
   if (source) {
@@ -45,7 +45,7 @@ Source* source_read(Source* source) {
 }
 
 // does not free linked list, free single entry
-void source_destroy(Source* source) {
+void source_destroy(Source *source) {
   if (source) {
     if (source->contents)
       free(source->contents);

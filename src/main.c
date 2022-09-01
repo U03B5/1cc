@@ -1,11 +1,11 @@
 #include "1cc/1cc.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   clock_t timer = clock();
   log_register("stderr", stderr, LEVEL_FATAL);
-  Allocator* allocator = make_allocator();
-  Lexer* lexer = make_lexer(allocator);
-  Source* src;
+  Allocator *allocator = make_allocator();
+  Lexer *lexer = make_lexer(allocator);
+  Source *src;
   int i = 0;
   if (argv[1]) {
     src = make_source(argv[1]);

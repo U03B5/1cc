@@ -25,17 +25,17 @@
 
 typedef struct chunk Chunk;
 struct chunk {
-  Chunk* next_chunk;
+  Chunk *next_chunk;
 };
 
 typedef struct arena Arena;
 struct arena {
-  Chunk* memory;
-  Chunk* pointer;
+  Chunk *memory;
+  Chunk *pointer;
   size_t capacity;
   // each chunk size
   int chunk_size;
-  Arena* extend_arena;
+  Arena *extend_arena;
 };
 
 typedef struct allocator Allocator;
@@ -45,20 +45,20 @@ struct allocator {
   char n_arenas;
 };
 
-void* memdup(Arena* arena, const void* src, size_t size);
-#define ALLOC(arena, type, ...) \
-  (type*)memdup(arena, (type[]){__VA_ARGS__}, sizeof(type))
-Arena* arena_emplace(Arena* arena, size_t size);
-Arena* arena_deplace(Arena* arena);
-Arena* arena_extend(Arena* arena);
-Allocator* make_allocator(void);
-Arena* allocator_register(Allocator* allocator, size_t size);
-Arena* allocator_get_arena(Allocator* allocator, size_t size);
-void allocator_deregister(Allocator* allocator, size_t size);
-void* allocator_malloc(Arena* arena);
-void allocator_free(Arena* arena, void* memory);
-void allocator_destroy(Allocator* allocator);
+void *memdup(Arena *arena, const void *src, size_t size);
+#define ALLOC(arena, type, ...)                                                \
+  (type *)memdup(arena, (type[]){__VA_ARGS__}, sizeof(type))
+Arena *arena_emplace(Arena *arena, size_t size);
+Arena *arena_deplace(Arena *arena);
+Arena *arena_extend(Arena *arena);
+Allocator *make_allocator(void);
+Arena *allocator_register(Allocator *allocator, size_t size);
+Arena *allocator_get_arena(Allocator *allocator, size_t size);
+void allocator_deregister(Allocator *allocator, size_t size);
+void *allocator_malloc(Arena *arena);
+void allocator_free(Arena *arena, void *memory);
+void allocator_destroy(Allocator *allocator);
 #ifdef DEBUG
 void allocator_test(void);
-#endif  // DEBUG
-#endif  // ALLOCATOR_H_
+#endif // DEBUG
+#endif // ALLOCATOR_H_

@@ -16,4 +16,4 @@ struct type {
   int size;
   int align;
 };
-#endif  // TYPE_H_
+#endif // TYPE_H_

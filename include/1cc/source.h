@@ -19,16 +19,16 @@
 
 typedef struct source Source;
 struct source {
-  const char* path;
-  char* contents;
-  char* cursor;
+  const char *path;
+  char *contents;
+  char *cursor;
   int line;
   size_t size;
-  Token* peek_token_cache;
-  Token* prev_token_cache;
+  Token *peek_token_cache;
+  Token *prev_token_cache;
 };
 
-Source* make_source(const char* path);
-Source* source_read(Source* source);
-void source_destroy(Source* source);
-#endif  // FILE_H_
+Source *make_source(const char *path);
+Source *source_read(Source *source);
+void source_destroy(Source *source);
+#endif // FILE_H_

@@ -8,8 +8,8 @@
 #include "1cc/hashmap.h"
 
 struct entry {
-  const char* key;
-  void* value;
+  const char *key;
+  void *value;
 };
 
 static size_t round_p2(size_t n) {
@@ -23,7 +23,7 @@ static size_t round_p2(size_t n) {
   return ++n;
 }
 
-size_t fnv1a_hash(const char* key) {
+size_t fnv1a_hash(const char *key) {
   size_t hash = 0x811c9dc5;
   for (size_t i = 0; key[i] != 0; ++i) {
     hash ^= key[i];
@@ -32,8 +32,8 @@ size_t fnv1a_hash(const char* key) {
   return hash;
 }
 
-Hashmap* make_hashmap(size_t size) {
-  Hashmap* hashmap = 0;
+Hashmap *make_hashmap(size_t size) {
+  Hashmap *hashmap = 0;
   if (size && size < MAX_MAP_SIZE) {
     if (!((size != 0) && !(size & (size - 1)) && size > 3)) {
       size = round_p2(size);
@@ -48,8 +48,8 @@ Hashmap* make_hashmap(size_t size) {
   return hashmap;
 }
 
-size_t hashmap_insert(Hashmap* hashmap, const char* key, void* value) {
-  Entry* buffer;
+size_t hashmap_insert(Hashmap *hashmap, const char *key, void *value) {
+  Entry *buffer;
   size_t q = 1, capacity, hash = 0;
   if (hashmap && hashmap->buffer && key) {
     if (hashmap->no_in_use >= hashmap->capacity)
@@ -60,7 +60,7 @@ size_t hashmap_insert(Hashmap* hashmap, const char* key, void* value) {
     while (buffer[hash].key) {
       if (buffer[hash].key != TOMBSTONE)
         if (!strcmp(key, buffer[hash].key))
-          return hash;  // already exists in hashmap
+          return hash; // already exists in hashmap
       hash = (hash + (q / 2) + (q * q) / 2) & (capacity - 1);
       ++q;
     }
@@ -71,9 +71,9 @@ size_t hashmap_insert(Hashmap* hashmap, const char* key, void* value) {
   return hash;
 }
 
-void* hashmap_remove(Hashmap* hashmap, const char* key) {
-  Entry* buffer;
-  void* value;
+void *hashmap_remove(Hashmap *hashmap, const char *key) {
+  Entry *buffer;
+  void *value;
   size_t q = 1, capacity, hash;
   if (hashmap && hashmap->buffer) {
     buffer = hashmap->buffer;
@@ -96,8 +96,8 @@ void* hashmap_remove(Hashmap* hashmap, const char* key) {
   return 0;
 }
 
-void* hashmap_retrieve(Hashmap* hashmap, const char* key) {
-  Entry* buffer;
+void *hashmap_retrieve(Hashmap *hashmap, const char *key) {
+  Entry *buffer;
   size_t q = 1, capacity, hash;
   if (hashmap && hashmap->buffer) {
     buffer = hashmap->buffer;
@@ -115,9 +115,9 @@ void* hashmap_retrieve(Hashmap* hashmap, const char* key) {
   return 0;
 }
 
-void* hashmap_nretrieve(Hashmap* hashmap, const char* key, size_t n) {
-  char* new_key;
-  void* value = 0;
+void *hashmap_nretrieve(Hashmap *hashmap, const char *key, size_t n) {
+  char *new_key;
+  void *value = 0;
   if (hashmap) {
     new_key = strndup(key, n);
     value = hashmap_retrieve(hashmap, new_key);
@@ -126,8 +126,8 @@ void* hashmap_nretrieve(Hashmap* hashmap, const char* key, size_t n) {
   return value;
 }
 
-void hashmap_resize(Hashmap* hashmap) {
-  Entry* old_buffer;
+void hashmap_resize(Hashmap *hashmap) {
+  Entry *old_buffer;
   size_t old_capacity;
   if (hashmap && hashmap->buffer) {
     old_capacity = hashmap->capacity;
@@ -143,7 +143,7 @@ void hashmap_resize(Hashmap* hashmap) {
   return;
 }
 
-void hashmap_destroy(Hashmap* hashmap) {
+void hashmap_destroy(Hashmap *hashmap) {
   if (hashmap) {
     if (hashmap->buffer)
       free(hashmap->buffer);
@@ -153,8 +153,8 @@ void hashmap_destroy(Hashmap* hashmap) {
 }
 
 #ifdef DEBUG
-void hashmap_dump(Hashmap* hashmap) {
-  Entry* buffer;
+void hashmap_dump(Hashmap *hashmap) {
+  Entry *buffer;
   if (hashmap && hashmap->buffer) {
     printf("Hashmap Info:\nCapacity: %ld\nN in use: %ld\n", hashmap->capacity,
            hashmap->no_in_use);
@@ -166,4 +166,4 @@ void hashmap_dump(Hashmap* hashmap) {
     }
   }
 }
-#endif  // DEBUG
+#endif // DEBUG

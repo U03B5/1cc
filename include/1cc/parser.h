@@ -15,8 +15,8 @@
 typedef struct parser Parser;
 struct parser {
   //  Symtab* symbol_table;
-  Arena* node_arena;
+  Arena *node_arena;
   // more
 };
 
-#endif  // PARSER_H_
+#endif // PARSER_H_

@@ -3,4 +3,4 @@
 #include "1cc/lexer.h"
 #include "1cc/source.h"
 
-#endif  // ONECC_H_
+#endif // ONECC_H_

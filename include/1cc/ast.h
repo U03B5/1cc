@@ -30,7 +30,7 @@ enum {
   NODE_PASSSTMT,
   NODE_BINARYEXPR,
   NODE_UNARYEXPR,
-  NODE_RELEXPR,  // relational expression
+  NODE_RELEXPR, // relational expression
   NODE_ASSIGNEXPR,
   NODE_CONDEXPR,
   NODE_CALLEXPR,
@@ -42,41 +42,41 @@ enum {
 typedef struct node Node;
 struct node {
   int kind;
-  Type* type;
-  Token* token;
+  Type *type;
+  Token *token;
   // additional information for various nodes
   union {
-    Node* body;
+    Node *body;
     // function call
     struct {
-      Node* arguments;
-      Type* return_type;
+      Node *arguments;
+      Type *return_type;
     };
     // conditional or loop
     struct {
-      Node* init;
-      Node* step;
+      Node *init;
+      Node *step;
       // conditional
-      Node* cond;
-      Node* then;
-      Node* els;
+      Node *cond;
+      Node *then;
+      Node *els;
     };
     // expression
     struct {
-      Node* lhs;
-      Node* rhs;
+      Node *lhs;
+      Node *rhs;
     };
     // return statement
     struct {
-      Node* return_value;
+      Node *return_value;
     };
     // case or default
     struct {
-      Node* next_case;
-      Node* default_case;
+      Node *next_case;
+      Node *default_case;
     };
   };
-  Node* next;
+  Node *next;
 };
 
-#endif  // AST_H_
+#endif // AST_H_

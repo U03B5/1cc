@@ -7,4 +7,4 @@
 
 #ifndef SSA_H_
 #define SSA_H_
-#endif  // SSA_H_
+#endif // SSA_H_

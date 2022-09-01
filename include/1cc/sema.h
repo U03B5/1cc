@@ -7,4 +7,4 @@
 
 #ifndef SEMA_H_
 #define SEMA_H_
-#endif  // SEMA_H_
+#endif // SEMA_H_
