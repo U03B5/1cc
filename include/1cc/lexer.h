@@ -14,15 +14,12 @@
 #include "1cc/hashmap.h"
 #include "1cc/log.h"
 #include "1cc/source.h"
-#include "1cc/vector.h"
 #include "1cc/token.h"
 
 typedef struct lexer Lexer;
 
 Lexer* make_lexer(Allocator* allocator);
 void lexer_destroy(Lexer* lexer);
-void lexer_register(Lexer* lexer, Source* path);
-Token* lexer_get(Lexer* lexer);
-Token* lexer_prev(Lexer* lexer);
-Token* lexer_peek(Lexer* lexer);
+Token* lexer_get(Lexer* lexer, Source* src);
+Token* lexer_peek(Lexer* lexer, Source* src);
 #endif  // LEXER_H_

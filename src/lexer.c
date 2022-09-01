@@ -26,12 +26,9 @@ struct lexer {
   // as long as we have a vector.
   // stack to contain each of the sources
   // contain as stack as we have to account for include directive
-  Vector* source;
   Allocator* token_allocator;
   Arena* token_arena;
   Hashmap* token_map;
-  Token* peek_token_cache;
-  Token* prev_token_cache;
 };
 
 // constant token table used internally within the lexer
@@ -47,7 +44,6 @@ const Token* g_token_table[] = {
 
 Lexer* make_lexer(Allocator* allocator) {
   Lexer* lexer = malloc(sizeof(Lexer));
-  lexer->source = make_stack(0, 0);
   lexer->token_allocator = allocator;
   lexer->token_arena = allocator_register(allocator, sizeof(Token));
   lexer->token_map = make_hashmap(TOKEN_LOAD_SIZE + 1);
@@ -62,32 +58,15 @@ Lexer* make_lexer(Allocator* allocator) {
 }
 
 void lexer_destroy(Lexer* lexer) {
-  Stack* source_stack;
   if (lexer) {
-    source_stack = lexer->source;
     allocator_deregister(lexer->token_allocator, sizeof(Token));
     hashmap_destroy(lexer->token_map);
-    for (Stack* tmp = stack_pop(&source_stack); tmp != 0; tmp = stack_pop(&source_stack)) {
-      if (tmp->value)
-        source_destroy(tmp->value);
-      free(tmp);
-    }
-    stack_destroy(lexer->source);
     free(lexer);
   }
   return;
 }
 
-void lexer_register(Lexer* lexer, Source* source) {
-  if (source_read(source))
-    stack_push(&lexer->source, source);
-  else
-    free(source);
-  return;
-}
-
-static Token* tokenize_integer(Lexer* lexer) {
-  Source* source = lexer->source->value;
+static Token* tokenize_integer(Lexer* lexer, Source* source) {
   char* cursor = source->cursor;
   int base = 10, is_floating = 0;
   if (*cursor == '0') {
@@ -133,16 +112,14 @@ static Token* tokenize_integer(Lexer* lexer) {
 
 // TODO: finish this at a later stage
 // its so boring implementing this. ill get at it someday
-static int handle_escaped_char(Lexer* lexer) {
-  Source* source = lexer->source->value;
+static int handle_escaped_char(Lexer* lexer, Source* source) {
   switch (*source->cursor) {}
   return 0;
 }
 
-static Token* tokenize_char(Lexer* lexer) {
-  Source* source = lexer->source->value;
+static Token* tokenize_char(Lexer* lexer, Source* source) {
   char* cursor = source->cursor;
-  int result = (*cursor == '\\') ? handle_escaped_char(lexer) : *++cursor;
+  int result = (*cursor == '\\') ? handle_escaped_char(lexer, source) : *++cursor;
   if (*++cursor == '\'')
     return (result) ? ALLOC(lexer->token_arena, Token,
                             {.kind = CHAR_LITERAL,
@@ -155,8 +132,7 @@ static Token* tokenize_char(Lexer* lexer) {
     return 0;
 }
 
-static Token* tokenize_string(Lexer* lexer) {
-  Source* source = lexer->source->value;
+static Token* tokenize_string(Lexer* lexer, Source* source) {
   char* cursor = ++source->cursor;
   int length = 0;
   for (; *source->cursor != '\"'; ++source->cursor) {
@@ -167,7 +143,7 @@ static Token* tokenize_string(Lexer* lexer) {
     }
     if (*cursor == '\\') {
       ++source->cursor;
-      int result = handle_escaped_char(lexer);
+      int result = handle_escaped_char(lexer, source);
       if (result)
         length += result;
       else
@@ -184,8 +160,7 @@ static Token* tokenize_string(Lexer* lexer) {
                 .line = source->line});
 }
 
-static Token* tokenize_ident(Lexer* lexer) {
-  Source* source = lexer->source->value;
+static Token* tokenize_ident(Lexer* lexer, Source* source) {
   char* cursor = source->cursor;
   size_t length;
   Token* kwrd_token;
@@ -206,8 +181,7 @@ static Token* tokenize_ident(Lexer* lexer) {
                                 .line = source->line}));
 }
 
-static Token* tokenize_operator(Lexer* lexer) {
-  Source* source = lexer->source->value;
+static Token* tokenize_operator(Lexer* lexer, Source* source) {
   char* cursor = source->cursor;
   Token* tmp = 0;
   if (IS_OPERATOR(*cursor)) {
@@ -234,9 +208,8 @@ static Token* tokenize_operator(Lexer* lexer) {
   return tmp;
 }
 
-static Token* lexer_get_internal(Lexer* lexer) {
+static Token* lexer_get_internal(Lexer* lexer, Source* source) {
   char c;
-  Source* source = lexer->source->value;
   if (*source->cursor) {
     while (IS_SKIP(*source->cursor)) {
       if (IS_NEWLINE(*source->cursor))
@@ -247,21 +220,21 @@ static Token* lexer_get_internal(Lexer* lexer) {
     switch (c) {
       case '\'':
         ++source->cursor;
-        return tokenize_char(lexer);
+        return tokenize_char(lexer, source);
       case '"':
         ++source->cursor;
-        return tokenize_string(lexer);
+        return tokenize_string(lexer, source);
       case 0:
         return 0;
       default:
         break;
     }
     if (IS_INTEGER(c))
-      return tokenize_integer(lexer);
+      return tokenize_integer(lexer, source);
     if (IS_IDENT_ASCII(c))
-      return tokenize_ident(lexer);
+      return tokenize_ident(lexer, source);
     if (IS_OPERATOR(c))
-      return tokenize_operator(lexer);
+      return tokenize_operator(lexer, source);
     LOG_WARNING("Unrecognized Token %d found on line %d of %s %s:%d\n",
                 *source->cursor, source->line, source->path, __FILE__,
                 __LINE__);
@@ -269,38 +242,25 @@ static Token* lexer_get_internal(Lexer* lexer) {
   return 0;
 }
 
-Token* lexer_get(Lexer* lexer) {
-  Source* source;
+Token* lexer_get(Lexer* lexer, Source* source) {
   Token* tmp = 0;
-  if (lexer->source->value) {
-    source = lexer->source->value;
+  if (source) {
     if (source->peek_token_cache) {
       tmp = source->peek_token_cache;
       source->peek_token_cache = 0;
       return tmp;
     } else
-      return source->prev_token_cache = lexer_get_internal(lexer);
+      return source->prev_token_cache = lexer_get_internal(lexer, source);
   }
   return 0;
 }
 
-Token* lexer_prev(Lexer* lexer) {
-  Source* source;
-  if (lexer && lexer->source->value) {
-    source = lexer->source->value;
-    return (source->prev_token_cache) ? (source->prev_token_cache) : 0;
-  }
-  return 0;
-}
-
-Token* lexer_peek(Lexer* lexer) {
-  Source* source;
-  if (lexer && lexer->source->value) {
-    source = lexer->source->value;
+Token* lexer_peek(Lexer* lexer, Source* source) {
+  if (lexer && source) {
     if (!source->peek_token_cache) {
       if (source->cursor >= (char*)(source->contents + source->size))
         return 0;
-      source->peek_token_cache = lexer_get_internal(lexer);
+      source->peek_token_cache = lexer_get_internal(lexer, source);
       source->cursor -= source->peek_token_cache->length;
     }
     return source->peek_token_cache;

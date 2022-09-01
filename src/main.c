@@ -5,10 +5,11 @@ int main(int argc, char** argv) {
   log_register("stderr", stderr, LEVEL_FATAL);
   Allocator* allocator = make_allocator();
   Lexer* lexer = make_lexer(allocator);
+  Source* src;
   int i = 0;
   if (argv[1]) {
-    lexer_register(lexer, make_source(argv[1]));
-    while (token_dump(lexer_get(lexer))) {
+    src = make_source(argv[1]);
+    while (token_dump(lexer_get(lexer, src))) {
       ++i;
     }
   }
