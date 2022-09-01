@@ -9,6 +9,7 @@ int main(int argc, char** argv) {
   int i = 0;
   if (argv[1]) {
     src = make_source(argv[1]);
+    source_read(src);
     while (token_dump(lexer_get(lexer, src))) {
       ++i;
     }

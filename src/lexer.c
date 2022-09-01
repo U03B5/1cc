@@ -210,7 +210,7 @@ static Token* tokenize_operator(Lexer* lexer, Source* source) {
 
 static Token* lexer_get_internal(Lexer* lexer, Source* source) {
   char c;
-  if (*source->cursor) {
+  if (source->cursor) {
     while (IS_SKIP(*source->cursor)) {
       if (IS_NEWLINE(*source->cursor))
         ++source->line;
