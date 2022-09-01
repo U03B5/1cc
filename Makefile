@@ -3,7 +3,7 @@ MAIN=1cc
 SRC_DIR=src
 HEADER_DIR=include
 HEADERS=$(wildcard include/$(MAIN)/*.h)
-CFLAGS=-Wall -D_DEFAULT_SOURCE $(DEBUG) -fvisibility=hidden -std=c11 -Wno-format -Wno-missing-braces -O2 -I include
+CFLAGS=-Wall -D_DEFAULT_SOURCE $(DEBUG) -std=c11 -O2 -I include
 SRCS=$(wildcard src/*.c)
 OBJS=$(SRCS:%.c=%.o)
 
