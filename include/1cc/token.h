@@ -12,12 +12,12 @@
 #include <string.h>
 
 enum {
-#define token(id, _, __) id,
-#define keyword(id, _, __) id,
+#define token(id, _) id,
+#define keyword(id, _) id,
 #include "1cc/import.h"
 #undef token
 #undef keyword
-  TOKEN_LOAD_SIZE,
+  __TOKEN_LOAD_SIZE__,
   IDENTIFIER,
   CHAR_LITERAL,
   STRING_LITERAL,

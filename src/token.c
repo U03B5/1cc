@@ -28,10 +28,10 @@ const char *kind2str(int kind) {
     return "INTEGER";
   case FLOAT_LITERAL:
     return "FLOAT";
-#define token(id, str, _)                                                      \
+#define token(id, str)                                                      \
   case id:                                                                     \
     return str;
-#define keyword(id, str, _)                                                    \
+#define keyword(id, str)                                                    \
   case id:                                                                     \
     return str;
 #include "1cc/import.h"

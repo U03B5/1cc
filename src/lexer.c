@@ -33,10 +33,10 @@ struct lexer {
 
 // constant token table used internally within the lexer
 const Token *g_token_table[] = {
-#define token(id, key, len)                                                    \
-  &(Token){.kind = id, .position = key, .length = len, .value.v = 0},
-#define keyword(id, key, len)                                                  \
-  &(Token){.kind = id, .position = key, .length = len, .value.v = 0},
+#define token(id, key)                                                    \
+  &(Token){.kind = id, .position = key, .length = sizeof(key), .value.v = 0},
+#define keyword(id, key)                                                  \
+  &(Token){.kind = id, .position = key, .length = sizeof(key), .value.v = 0},
 #include "1cc/import.h"
 #undef keyword
 #undef token
@@ -46,10 +46,10 @@ Lexer *make_lexer(Allocator *allocator) {
   Lexer *lexer = malloc(sizeof(Lexer));
   lexer->token_allocator = allocator;
   lexer->token_arena = allocator_register(allocator, sizeof(Token));
-  lexer->token_map = make_hashmap(TOKEN_LOAD_SIZE + 1);
-#define token(id, key, _)                                                      \
+  lexer->token_map = make_hashmap(__TOKEN_LOAD_SIZE__ + 1);
+#define token(id, key)                                                      \
   hashmap_insert(lexer->token_map, key, (void *)g_token_table[id]);
-#define keyword(id, key, _)                                                    \
+#define keyword(id, key)                                                    \
   hashmap_insert(lexer->token_map, key, (void *)g_token_table[id]);
 #include "1cc/import.h"
 #undef keyword
@@ -70,7 +70,7 @@ static Token *tokenize_integer(Lexer *lexer, Source *source) {
   char *cursor = source->cursor;
   int base = 10, is_floating = 0;
   if (*cursor == '0') {
-    if (cursor[1] == 'x' || cursor[1] == 'X') {
+    if (cursor[1] == 'x') {
       if (IS_HEXADECIMAL(cursor[2])) {
         source->cursor += 2;
         base = 16;
